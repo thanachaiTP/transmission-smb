@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  samba:
+    container_name: smb
+    restart: always
+#    tty: true
+#    network_mode: host
+    volumes:
+      - ./download/complete:/Shared
+    ports:
+      - "139:139"
+      - "445:445"
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+  transmission:
+    image: ghcr.io/linuxserver/transmission
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Bangkok
+#      - USER=username #optional
+#      - PASS=password #optional
+    volumes:
+      - ./config:/config
+      - ./download/:/downloads
+      - ./watch:/watch
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    restart: unless-stopped
